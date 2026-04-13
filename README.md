@@ -1,116 +1,77 @@
-[![pipeline status](https://gitlab.com/cutecom/cutecom/badges/master/pipeline.svg)](https://gitlab.com/cutecom/cutecom/commits/master)
+[![Linux and Mac Build Status](https://travis-ci.org/nickbnf/glogg.svg?branch=master)](https://travis-ci.org/nickbnf/glogg)
+ [![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/nickbnf/glogg?svg=true)](https://ci.appveyor.com/project/nickbnf/glogg)
 
-## Welcome to _CuteCom_
+glogg - the fast, smart log explorer
+=====================================
 
-CuteCom is a graphical serial terminal, like minicom. 
-Currently it runs on Linux (tested) and should run on FreeBSD, Mac OS X and maybe other systems as well (untested).  
-It is aimed mainly at hardware developers or other people who need a terminal to talk to their devices. 
-It is free software and distributed under the GNU General Public License Version 3. 
-It is written using the [Qt library](http://www.qt.io/) originally created by Trolltech.
+glogg is a multi-platform GUI application that helps browse and search
+through long and complex log files.  It is designed with programmers and
+system administrators in mind and can be seen as a graphical, interactive
+combination of grep and less.
 
-### History
+## Main features
 
-The current CuteCom-version is based on Qt 6 using QSerialport (starting with version 0.60.0)
-It features session support which comes in handy if you have two or more devices connected, each of it talking 
-in different baudrates or other connection parameters. The command history is stored for each individual session since
-different devices may provide a different set of commands.
-Features enhancements of various forks have been included see [**_CREDITS_**](CREDITS) for a complete list.
+* Runs on Unix-like systems, Windows and Mac thanks to Qt
+* Provides a second window showing the result of the current search
+* Reads UTF-8 and ISO-8859-1 files
+* Supports grep/egrep like regular expressions
+* Colorizes the log and search results
+* Displays a context view of where in the log the lines of interest are
+* Is fast and reads the file directly from disk, without loading it into memory
+* Is open source, released under the GPL
 
-### Features:
+## Download
 
-*   easy to use GUI
-*   no cryptic keyboard shortcuts
-*   lineoriented interface instead of character-oriented
-*   Ctrl+C, Ctrl+Q and Ctrl+S control sequences work (use CMD+<Key> on MacOS)
-*   input history
-*   a cute GUI ;-)
-*   session support via -s <session name> specified at the command line
-*   switching sessions via a session manager
-*   control panel hides when not used 
-*   xmodem, ymodem, zmodem support (requires the sz tools)
-*   easy to differentiate between typed text and echoed text
-*   select between read/write, read-only and write-only open mode
-*   hexadecimal input and output
-*   configurable line end characters (LF, CR, LFCR)
-*   configurable delay between characters
-*   optionally show control characters like line feed or tabs in output
-*   optionally prefix each line in output with a timestamp
-*   open the device without changing its settings (was not ported but could be added if demand arrises )
-*   plugins (macros, netproxy)
+Installers, binaries and source tarballs are available at https://glogg.bonnefon.org/download.html.
 
+## Requirements
 
-### Build instructions
+* GCC version 4.8.0 or later
+* Qt libraries (version 5.2.0 or later)
+* Boost "program-options" development libraries
+* Markdown HTML processor (optional, to generate HTML documentation)
 
-On Linux you will hopefully find ready made packages using the package manager of your distribution.
-To build your own copy, you need to run `cmake .` followd by make.
-You'll then find a cutecom binary in the same folder.
-`make package` should provide you with a generic RPM package (which lacks the documentation and the like).
-`make dist` creates a tar ball (so does `make package_source`).  
-The latter are especially usefule for crafting [a new release](./Releasing.md).  
-CuteCom is using [GitLabCI](./CI.md).
+glogg version 0.9.X still support older versions of gcc and Qt if you need to
+build on an older platform.
 
-#### Requirements for Building:
+## Building
 
-*   Qt >= 6.6, QtSerialPort6, CMake >= 3.5
-*   on linux look for the qt5 development packages including QSerialport
-*   Since C++C11 features are used a gcc supporting these is needed too
+The build system uses qmake. Building and installation is done this way:
 
-## Changelog
+```
+tar xzf glogg-X.X.X.tar.gz
+cd glogg-X.X.X
+qmake
+make
+make install INSTALL_ROOT=/usr/local (as root if needed)
+```
 
-Here is the complete [**_Changelog_**](Changelog).  
+`qmake BOOST_PATH=/path/to/boost/` will statically compile the required parts of
+the Boost libraries whose source are found at the specified path.
+The path should be the directory where the tarball from www.boost.org is
+extracted.
+(use this method on Windows or if Boost is not available on the system)
 
-**_Current state:_** stable
+The documentation is built and installed automatically if 'markdown'
+is found.
 
-**_TODO_ **:
+## Tests
 
-*   searching in the output view via context menu and Ctrl+F shortcut
-*   translations
-*   show control characters in a different colour
-*   selectable style for the output view like green on black including
-*   font selection for the output view
+The tests are built using CMake, and require Qt5 and the Google Mocks source.
 
+```
+cd tests
+mkdir build
+cd build
+export QT_DIR=/path/to/qt/if/non/standard
+export GMOCK_HOME=/path/to/gmock
+cmake ..
+make
+./glogg_tests
+```
 
-As always:
-**Pull requests are welcome ! :-)**
-Please check the [contribution guidelines](CONTRIBUTING.md).
+## Contact
 
-### Screenshot
+Please visit glogg's website: http://glogg.bonnefon.org/
 
-Ok, here comes the inevitable screenshot:  
-
-![Screenshots](cutecom.png)
-
-The control panel for adjusting the device settings slides out when pressing the Settings button.
-At the upper half, commands issued are accumulated. 
-Commands may be selected from the history using up and down arrow keys.'
-Right below command line situated right in the middle, the output view can be found.
-It will autoscroll to the end of the date sent from the connected device.
-Autoscolling will stop, once a certain section of the data is scrolled to.
-PageUp and PageDown are working for moving through the output view.
-
-![Pressing Ctrl will open a widget allowing you to add control characters into the input field](ctr_characters.png)    
-Pressing (and holding for about 1 sec) the \[Ctrl\]-key will open a widget allowing you to add control characters into the input field.
-
-## FAQ
-
-### Linux
-    - Permission error
-        The user must be in the dialout group to have the permission to talk with the device.
-        ```bash
-        sudo usermod -a -G dialout <username>
-        reboot
-        ```
-
-
-## Previous versions:
-
-
-CuteCom version < 0.60.0: Qt >= 5.3, CMake >= 2.8.12 (2018)
-
-**_Previous version (uses Qt4):_** [cutecom-0.22.0.tar.gz,](http://cutecom.sourceforge.net/cutecom-0.22.0.tar.gz) , June 27th, 2009
-(yes, it's really only 22kb). Now also works on Mac OSX and supports more baud rates.  
-
-For older versions have a look at the SourceForge project page.
-
-CuteCom was heavily inspired by [Bray++ Terminal for Windows](https://sites.google.com/site/terminalbpp/).
-
+The development mailing list is hosted at http://groups.google.co.uk/group/glogg-devel
