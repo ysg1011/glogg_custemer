@@ -25,7 +25,7 @@
 #include "logdata.h"
 
 // Number of lines in each chunk to read
-const int SearchOperation::nbLinesInChunk = 5000;
+const int SearchOperation::nbLinesInChunk = 10000;
 
 void SearchData::getAll( int* length, SearchResultArray* matches,
         qint64* lines) const
@@ -60,6 +60,12 @@ void SearchData::addAll( int length,
     // linear.
     matches_.insert( std::end( matches_ ),
             std::begin( matches ), std::end( matches ) );
+}
+
+void SearchData::reserve( qint64 size )
+{
+    QMutexLocker locker( &dataMutex_ );
+    matches_.reserve( static_cast<size_t>( size ) );
 }
 
 LineNumber SearchData::getNbMatches() const
@@ -242,8 +248,7 @@ void SearchOperation::doSearch( SearchData& searchData, qint64 initialLine )
         int j = 0;
         for ( ; j < lines.size(); j++ ) {
             if ( regexp_.match( lines[j] ).hasMatch() ) {
-                // FIXME: increase perf by removing temporary
-                const int length = sourceLogData_->getExpandedLineString(i+j).length();
+                const int length = lines[j].length();
                 if ( length > maxLength )
                     maxLength = length;
                 currentList.push_back( MatchingLine( i+j ) );
@@ -265,6 +270,10 @@ void FullSearchOperation::start( SearchData& searchData )
 {
     // Clear the shared data
     searchData.clear();
+
+    // Pre-allocate based on 1% estimated match rate
+    const qint64 nbLines = sourceLogData_->getNbLine();
+    searchData.reserve( qMax( static_cast<qint64>( 1000 ), nbLines / 100 ) );
 
     doSearch( searchData, 0 );
 }

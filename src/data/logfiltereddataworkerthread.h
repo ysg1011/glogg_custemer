@@ -69,6 +69,8 @@ class SearchData
     void setAll( int length, SearchResultArray&& matches );
     // Atomically add to all the existing search data.
     void addAll( int length, const SearchResultArray& matches, LineNumber nbLinesProcessed );
+    // Pre-allocate capacity for the matches array
+    void reserve( qint64 size );
     // Get the number of matches
     LineNumber getNbMatches() const;
     // Delete the match for the passed line (if it exist)
