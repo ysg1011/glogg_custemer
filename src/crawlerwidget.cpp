@@ -294,10 +294,10 @@ void CrawlerWidget::quickFindFilterSearch( const QString& searchText, bool ignor
         return;
 
     // Update the search line combo to show the QuickFind text
-    searchLineEdit->setEditText( searchText );
+    // searchLineEdit->setEditText( searchText );
 
     // Sync the ignore case checkbox with QuickFind's setting
-    ignoreCaseCheck->setCheckState( ignoreCase ? Qt::Checked : Qt::Unchecked );
+    // ignoreCaseCheck->setCheckState( ignoreCase ? Qt::Checked : Qt::Unchecked );
 
     // Record in recent searches
     GetPersistentInfo().retrieve( "savedSearches" );

@@ -56,7 +56,8 @@ QuickFindWidget::QuickFindWidget( QWidget* parent ) : QWidget( parent )
     layout->addWidget( editQuickFind_ );
 
     ignoreCaseCheck_ = new QCheckBox( "Ignore &case" );
-    layout->addWidget( ignoreCaseCheck_ );
+    // layout->addWidget( ignoreCaseCheck_ );
+    ignoreCaseCheck_->hide();
 
     previousButton_ = setupToolButton( QLatin1String("Previous"),
             QLatin1String( ":/images/arrowup.png" ) );
@@ -141,7 +142,7 @@ void QuickFindWidget::doSearchForward()
     // the widget to stay visible.
     userRequested_ = true;
 
-    emit patternConfirmed( editQuickFind_->text(), isIgnoreCase() );
+    // Only navigate, don't re-trigger filter search
     emit searchForward();
 }
 
@@ -154,7 +155,7 @@ void QuickFindWidget::doSearchBackward()
     // the widget to stay visible.
     userRequested_ = true;
 
-    emit patternConfirmed( editQuickFind_->text(), isIgnoreCase() );
+    // Only navigate, don't re-trigger filter search
     emit searchBackward();
 }
 
