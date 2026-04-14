@@ -288,6 +288,27 @@ void CrawlerWidget::startNewSearch()
     replaceCurrentSearch( searchLineEdit->currentText() );
 }
 
+void CrawlerWidget::quickFindFilterSearch( const QString& searchText, bool ignoreCase )
+{
+    if ( searchText.isEmpty() )
+        return;
+
+    // Update the search line combo to show the QuickFind text
+    searchLineEdit->setEditText( searchText );
+
+    // Sync the ignore case checkbox with QuickFind's setting
+    ignoreCaseCheck->setCheckState( ignoreCase ? Qt::Checked : Qt::Unchecked );
+
+    // Record in recent searches
+    GetPersistentInfo().retrieve( "savedSearches" );
+    savedSearches_->addRecent( searchText );
+    GetPersistentInfo().save( "savedSearches" );
+    updateSearchCombo();
+
+    // Run the filter search
+    replaceCurrentSearch( searchText );
+}
+
 void CrawlerWidget::stopSearch()
 {
     logFilteredData_->interruptSearch();

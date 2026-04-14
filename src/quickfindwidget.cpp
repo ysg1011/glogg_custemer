@@ -76,8 +76,7 @@ QuickFindWidget::QuickFindWidget( QWidget* parent ) : QWidget( parent )
 
     // Behaviour
     connect( closeButton_, SIGNAL( clicked() ), SLOT( closeHandler() ) );
-    connect( editQuickFind_, SIGNAL( textEdited( QString ) ),
-             this, SLOT( textChanged() ) );
+    // Don't search while typing — only search on Enter or button click
     connect( ignoreCaseCheck_, SIGNAL( stateChanged( int ) ),
              this, SLOT( textChanged() ) );
     /*
@@ -159,14 +158,11 @@ void QuickFindWidget::doSearchBackward()
     emit searchBackward();
 }
 
-// Close and search when the user presses Return
+// Search when the user presses Return (keep widget visible)
 void QuickFindWidget::returnHandler()
 {
     emit patternConfirmed( editQuickFind_->text(), isIgnoreCase() );
-    // Close the widget
-    userRequested_ = false;
-    this->hide();
-    emit close();
+    emit searchForward();
 }
 
 // Close and reset flag when the user clicks 'close'

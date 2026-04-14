@@ -86,6 +86,8 @@ class CrawlerWidget : public QSplitter,
     void reload();
     // Set the encoding
     void setEncoding( Encoding encoding );
+    // Perform a filter search from QuickFind pattern
+    void quickFindFilterSearch( const QString& searchText, bool ignoreCase );
 
   protected:
     // Implementation of the ViewInterface functions

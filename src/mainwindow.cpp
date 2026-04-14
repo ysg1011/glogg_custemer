@@ -100,6 +100,10 @@ MainWindow::MainWindow( std::unique_ptr<Session> session,
             SLOT( enteringQuickFind() ) );
     signalMux_.connect( &quickFindWidget_, SIGNAL( close() ),
             SLOT( exitingQuickFind() ) );
+    // Connect QuickFind pattern to the filter view search
+    signalMux_.connect( &quickFindWidget_,
+            SIGNAL( patternConfirmed( const QString&, bool ) ),
+            SLOT( quickFindFilterSearch( const QString&, bool ) ) );
 
     // Actions from the CrawlerWidget
     signalMux_.connect( SIGNAL( followModeChanged( bool ) ),
