@@ -67,6 +67,9 @@ class QuickFindWidget : public QWidget
     // Sent when Return is pressed to confirm the pattern
     // (pattern and ignor_case flag)
     void patternConfirmed( const QString&, bool );
+    // Sent when Next/Previous is clicked to ensure pattern is set
+    // (only updates QuickFindPattern, does not trigger filter search)
+    void patternConfirmedForNavigation( const QString&, bool );
     // Sent every time the pattern is modified
     // (pattern and ignor_case flag)
     void patternUpdated( const QString&, bool );

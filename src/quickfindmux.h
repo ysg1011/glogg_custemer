@@ -105,6 +105,10 @@ class QuickFindMux : public QObject
     // (will stop an incremental search if needed)
     void confirmPattern( const QString& new_pattern, bool ignore_case );
 
+    // Only update the pattern for navigation (Next/Previous button clicks)
+    // without triggering any filter search
+    void ensurePatternIsSet( const QString& new_pattern, bool ignore_case );
+
     // Signal the user cancelled the search
     // (used for incremental only)
     void cancelSearch();

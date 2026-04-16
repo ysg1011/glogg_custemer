@@ -227,6 +227,7 @@ class CrawlerWidget : public QSplitter,
     // Private functions
     void setup();
     void replaceCurrentSearch( const QString& searchText );
+    void replaceCurrentSearch( const QString& searchText, bool ignoreCase );
     void updateSearchCombo();
     AbstractLogView* activeView() const;
     void printSearchInfoMessage( int nbMatches = 0 );

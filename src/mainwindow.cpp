@@ -138,6 +138,8 @@ MainWindow::MainWindow( std::unique_ptr<Session> session,
     // QFWidget to the right window )
     connect( &quickFindWidget_, SIGNAL( patternConfirmed( const QString&, bool ) ),
              &quickFindMux_, SLOT( confirmPattern( const QString&, bool ) ) );
+    connect( &quickFindWidget_, SIGNAL( patternConfirmedForNavigation( const QString&, bool ) ),
+             &quickFindMux_, SLOT( ensurePatternIsSet( const QString&, bool ) ) );
     connect( &quickFindWidget_, SIGNAL( patternUpdated( const QString&, bool ) ),
              &quickFindMux_, SLOT( setNewPattern( const QString&, bool ) ) );
     connect( &quickFindWidget_, SIGNAL( cancelSearch() ),

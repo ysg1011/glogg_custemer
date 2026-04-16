@@ -138,6 +138,14 @@ void QuickFindMux::confirmPattern(
     }
 }
 
+void QuickFindMux::ensurePatternIsSet(
+        const QString& new_pattern, bool ignore_case )
+{
+    // Only update the pattern so that Next/Previous navigation works.
+    // Does not trigger incremental search or filter search.
+    pattern_->changeSearchPattern( new_pattern, ignore_case );
+}
+
 void QuickFindMux::cancelSearch()
 {
     static std::shared_ptr<Configuration> config =

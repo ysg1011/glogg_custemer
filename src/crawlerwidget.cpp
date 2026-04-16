@@ -293,20 +293,15 @@ void CrawlerWidget::quickFindFilterSearch( const QString& searchText, bool ignor
     if ( searchText.isEmpty() )
         return;
 
-    // Update the search line combo to show the QuickFind text
-    // searchLineEdit->setEditText( searchText );
-
-    // Sync the ignore case checkbox with QuickFind's setting
-    // ignoreCaseCheck->setCheckState( ignoreCase ? Qt::Checked : Qt::Unchecked );
-
     // Record in recent searches
     GetPersistentInfo().retrieve( "savedSearches" );
     savedSearches_->addRecent( searchText );
     GetPersistentInfo().save( "savedSearches" );
     updateSearchCombo();
 
-    // Run the filter search
-    replaceCurrentSearch( searchText );
+    // Run the filter search using QuickFind's own ignore case setting,
+    // independent of the filter view's ignore case checkbox
+    replaceCurrentSearch( searchText, ignoreCase );
 }
 
 void CrawlerWidget::stopSearch()
@@ -906,6 +901,84 @@ void CrawlerWidget::replaceCurrentSearch( const QString& searchText )
                 | QRegularExpression::OptimizeOnFirstUsageOption;
 
         if ( ignoreCaseCheck->checkState() == Qt::Checked )
+            patternOptions |= QRegularExpression::CaseInsensitiveOption;
+
+        // Constructs the regexp
+        QRegularExpression regexp( pattern, patternOptions );
+
+        if ( regexp.isValid() ) {
+            // Activate the stop button
+            stopButton->setEnabled( true );
+            // Start a new asynchronous search
+            logFilteredData_->runSearch( regexp );
+            // Accept auto-refresh of the search
+            searchState_.startSearch();
+        }
+        else {
+            // The regexp is wrong
+            logFilteredData_->clearSearch();
+            filteredView->updateData();
+            searchState_.resetState();
+
+            // Inform the user
+            QString errorMessage = tr("Error in expression");
+            const int offset = regexp.patternErrorOffset();
+            if (offset != -1) {
+                errorMessage += " at position ";
+                errorMessage += QString::number(offset);
+            }
+            errorMessage += ": ";
+            errorMessage += regexp.errorString();
+            searchInfoLine->setPalette( errorPalette );
+            searchInfoLine->setText( errorMessage );
+        }
+    }
+    else {
+        searchState_.resetState();
+        printSearchInfoMessage();
+    }
+}
+
+// Create a new search using the text passed with an explicit ignore case flag,
+// independent of the filter view's ignore case checkbox.
+void CrawlerWidget::replaceCurrentSearch( const QString& searchText, bool ignoreCase )
+{
+    // Interrupt the search if it's ongoing
+    logFilteredData_->interruptSearch();
+
+    QApplication::processEvents( QEventLoop::ExcludeUserInputEvents );
+
+    nbMatches_ = 0;
+
+    // Clear and recompute the content of the filtered window.
+    logFilteredData_->clearSearch();
+    filteredView->updateData();
+
+    // Update the match overview
+    overview_.updateData( logData_->getNbLine() );
+
+    if ( !searchText.isEmpty() ) {
+
+        QString pattern;
+
+        // Determine the type of regexp depending on the config
+        static std::shared_ptr<Configuration> config =
+            Persistent<Configuration>( "settings" );
+        switch ( config->mainRegexpType() ) {
+            case FixedString:
+                pattern = QRegularExpression::escape(searchText);
+                break;
+            default:
+                pattern = searchText;
+                break;
+        }
+
+        // Use the explicit ignoreCase parameter instead of the checkbox
+        QRegularExpression::PatternOptions patternOptions =
+                QRegularExpression::UseUnicodePropertiesOption
+                | QRegularExpression::OptimizeOnFirstUsageOption;
+
+        if ( ignoreCase )
             patternOptions |= QRegularExpression::CaseInsensitiveOption;
 
         // Constructs the regexp
